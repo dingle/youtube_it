@@ -1,5 +1,8 @@
 == DONATION
 
+  This is a fork from kylejginavan/youtube_it. The main motivation is to add 
+  a feature to reply to comments and provide raw youtube response in upload_video.
+
   YOUTUBE_IT is developed by many contributors who are passioned about opensource projects 
   and selflessly donate their time and work. Following that spirit your donations to this project 
   will be destined to the Tuquito Libre Foundation(http://fundacion.tuquito.org.ar) for developing 
