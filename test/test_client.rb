@@ -27,6 +27,13 @@ class TestClient < Test::Unit::TestCase
       @client = YouTubeIt::OAuth2Client.new(:client_access_token => "ya29.AHES6ZScTtSAYx3xMRpF0DdKO6sJU2tnJBYa58P-FG-IhIpjloowYw", :client_id => "68330730158.apps.googleusercontent.com", :client_secret => "Npj4rmtme7q6INPPQjpQFuCZ", :client_refresh_token => "1/HzXbuoUO9iK-9kwJc7pAk54nxOCQiuCWre95YgLi1Dc", :dev_key => ACCOUNT[:dev_key])
       @client.refresh_access_token!    
   end
+  
+  def teardown
+    result = @client.my_videos
+    result.videos.each do |v|
+      @client.video_delete(v.unique_id)
+    end
+  end
 
   def test_should_respond_to_a_basic_query
     response = @client.videos_by(:query => "penguin")  
@@ -40,7 +47,7 @@ class TestClient < Test::Unit::TestCase
     response.videos.each { |v| assert_valid_video v }
   end
   
-    def test_should_respond_to_a_basic_query_with_offset_and_max_results
+  def test_should_respond_to_a_basic_query_with_offset_and_max_results
     response = @client.videos_by(:query => "penguin", :offset => 15, :max_results => 30)
   
     assert_equal "tag:youtube.com,2008:videos", response.feed_id
@@ -259,6 +266,15 @@ class TestClient < Test::Unit::TestCase
     comment = @client.comments(video.unique_id).first.content
     assert comment, "test comment"
     @client.video_delete(video.unique_id)
+  end
+  
+  def test_should_add_new_comment_in_reply_to_a_comment
+    video  = @client.video_upload(File.open("test/test.mov"), OPTIONS)
+    @client.add_comment(video.unique_id, "first comment")
+    comment_xml_id = @client.comments(video.unique_id).first.url
+    comment = @client.reply_to_comment(comment_xml_id, 'reply to first comment')
+    comments = @client.comments(video.unique_id)
+    assert comments.first.content, 'reply to first comment'
   end
        
   def test_should_add_and_delete_video_from_playlist
