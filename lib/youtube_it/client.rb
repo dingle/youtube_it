@@ -125,6 +125,10 @@ class YouTubeIt
     def add_comment(video_id, comment)
       client.add_comment(video_id, comment)
     end
+    
+    def reply_to_comment(comment_id, comment)
+      client.reply_to_comment(comment_id, comment)
+    end
 
     # opts is converted to get params and appended to comments gdata api url
     # eg opts = { 'max-results' => 10, 'start-index' => 20 }

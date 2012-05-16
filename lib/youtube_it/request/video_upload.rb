@@ -196,6 +196,16 @@ class YouTubeIt
         
         return {:code => response.status, :body => response.body}
       end
+      
+      # <id>tag:youtube.com,2008:video:A-RkXwA9MZs:comment:WhDPLii51x6UObGbEBXCTQvgMlFJGGy70gq0i2tqbz8</id>
+      def reply_to_comment(comment_xml_id, comment)
+        video_id, comment_id = /\S*video:(\S+):comment:(\S+)/.match(comment_xml_id)[1..2]
+        comment_xml_body = comment_xml_for(:video_id => video_id , :comment_id => comment_id, :comment => comment)
+        comment_url = "/feeds/api/videos/%s/comments" % video_id
+        response = yt_session.post(comment_url, comment_xml_body)
+        
+        return {:code => response.status, :body => response.body}
+      end
 
       def comments(video_id, opts = {})
         comment_url = "/feeds/api/videos/%s/comments?" % video_id
@@ -527,6 +537,19 @@ class YouTubeIt
             m.category(:scheme => "http://gdata.youtube.com/schemas/2007/subscriptiontypes.cat", :term => "channel")
             m.tag!("yt:username", data[:subscribe])
           end
+        end.to_s
+      end
+      
+      def comment_xml_for(data)
+        b = Builder::XmlMarkup.new
+        b.instruct!
+        b.entry(:xmlns => "http://www.w3.org/2005/Atom", 'xmlns:yt' => "http://gdata.youtube.com/schemas/2007") do | m |
+          if data[:comment_id] && data[:video_id]
+            m.link(:rel => "http://gdata.youtube.com/schemas/2007#in-reply-to",
+                :type => "application/atom+xml", 
+                :href => "https://gdata.youtube.com/feeds/api/videos/%s/comments/%s" % [data[:video_id], data[:comment_id]])
+          end
+          m.content(data[:comment]) if data[:comment]
         end.to_s
       end
       
