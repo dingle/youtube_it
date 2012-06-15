@@ -178,6 +178,14 @@ class YouTubeIt
 
         return true
       end
+      
+      def delete_comment(comment_xml_id)
+        video_id, comment_id = /\S*video:(\S+):comment:(\S+)/.match(comment_xml_id)[1..2]
+        delete_url = "feeds/api/videos/#{video_id}/comments/#{comment_id}"
+        responss = yt_session.delete(delete_url)
+        
+        return true
+      end
 
       def get_upload_token(options, nexturl)
         @opts      = options

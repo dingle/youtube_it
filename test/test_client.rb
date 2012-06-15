@@ -237,6 +237,17 @@ class TestClient < Test::Unit::TestCase
     assert @client.video_delete(video.unique_id)
   end
   
+  def test_should_delete_comment
+    video = @client.video_upload(File.open("test/test.mov"), OPTIONS)
+    assert_valid_video video
+    comment = @client.add_comment(video.unique_id, 'test comment')
+    comments = @client.comments(video.unique_id)
+    assert_equal comments.length, 1
+    @client.comment_delete(comments[0].url)
+    comments = @client.comments(video.unique_id)
+    assert_equal comments.length, 0
+  end
+  
   def test_should_denied_comments
     video     = @client.video_upload(File.open("test/test.mov"), OPTIONS.merge(:comment => "denied"))
     assert_valid_video video
@@ -258,8 +269,7 @@ class TestClient < Test::Unit::TestCase
     assert    video.noembed
     @client.video_delete(video.unique_id)
   end
-    
-  
+
   def test_should_add_new_comment
     video  = @client.video_upload(File.open("test/test.mov"), OPTIONS)
     @client.add_comment(video.unique_id, "test comment")

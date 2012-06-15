@@ -114,6 +114,11 @@ class YouTubeIt
       client.delete(video_id)
     end
     
+    # need the comment unique id in the format: "tag:youtube.com,2008:video:vvlyVXnl-Z4:comment:vGoibNNPzOCf11-2OParv40xNqQVYrkUvP0UmGi2ja8" 
+    def comment_delete(comment_id)
+      client.delete_comment(comment_id)
+    end
+    
     def message_delete(message_id)
       client.delete_message(message_id)
     end
